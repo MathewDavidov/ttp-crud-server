@@ -19,7 +19,7 @@ router.get("/:id", async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        const student = await Student.findByPk(id);
+        const student = await Student.findByPk(id, { include: Campus });
         res.status(200).json(student);
     } catch (error) {
         next(error);
