@@ -5,7 +5,7 @@ const { Campus, Student } = require("../database/models");
 // Endpoint for getting all students
 router.get("/", async (req, res, next) => {
     try {
-        const students = await Student.findAll(/*{ include: Campus }*/);
+        const students = await Student.findAll({ include: Campus });
         console.log(students);
 
         res.status(200).json(students);
@@ -49,40 +49,43 @@ router.post("/", async (req, res, next) => {
 
 // Endpoint for updating a student based on their ID
 router.put("/:id", async (req, res, next) => {
-    const { id } = req.params;
+    // *** OLD METHOD, NOW USES SHAHID'S IMPLEMTATION BELOW ***
+    // const { id } = req.params;
 
-    const { firstName, lastName, email, imageUrl, gpa } = req.body;
+    // const { firstName, lastName, email, imageUrl, gpa, campusId } = req.body;
+    // console.log(campusId + " from api");
+    // const changeStudent = {
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     email: email,
+    //     imageUrl: imageUrl,
+    //     gpa: gpa,
+    //     campusId: campusId,
+    // };
 
-    const changeStudent = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        imageUrl: imageUrl,
-        gpa: gpa,
-    };
+    // try {
+    //     const student = await Student.findByPk(id);
 
-    try {
-        const student = await Student.findByPk(id);
+    //     await student.set(changeStudent);
+    //     const updatedStudent = await student.save();
 
-        await student.set(changeStudent);
-        const updatedStudent = await student.save();
-
-        res.status(201).send(updatedStudent);
-    } catch (error) {
-        next(error);
-    }
+    //     res.status(201).send(updatedStudent);
+    // } catch (error) {
+    //     next(error);
+    // }
   
-    //const { id } = req.params;
-    //const { campusId } = req.body;
-    //const updatedObj = { campusId: campusId };
-    //try {
-    //    const student = await Student.findByPk(id);
-    //    await student.set(updatedObj);
-    //    const updatedStudent = await student.save();
-    //    res.status(201).send(updatedStudent);
-    //} catch (err) {
-    //    next(err);
-    //}
+    const { id } = req.params;
+    // const { campusId } = req.body;
+    // const updatedObj = { campusId: campusId };
+    const updatedObj = { ...req.body };
+    try {
+       const student = await Student.findByPk(id);
+       await student.set(updatedObj);
+       const updatedStudent = await student.save();
+       res.status(201).send(updatedStudent);
+    } catch (err) {
+       next(err);
+    }
 });
 
 // Endpoint for deleting a student based on their ID
